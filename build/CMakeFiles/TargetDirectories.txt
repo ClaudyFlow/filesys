@@ -1,0 +1,4 @@
+D:/Code/Project/filesys/build/CMakeFiles/main.exe.dir
+D:/Code/Project/filesys/build/CMakeFiles/mkfs.exe.dir
+D:/Code/Project/filesys/build/CMakeFiles/edit_cache.dir
+D:/Code/Project/filesys/build/CMakeFiles/rebuild_cache.dir

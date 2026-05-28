@@ -1,0 +1,20 @@
+CMakeFiles/main.exe.dir/rdwt.c.obj: D:/Code/Project/filesys/rdwt.c \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/stdio.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/corecrt_stdio_config.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/corecrt.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/_mingw.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/_mingw_mac.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/_mingw_secapi.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/lib/clang/22/include/vadefs.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/vadefs.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/_mingw_off_t.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/swprintf.inl \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/sec_api/stdio_s.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/lib/clang/22/include/stdint.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/stdint.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/crtdefs.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/lib/clang/22/include/stddef.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/include/stddef.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/lib/clang/22/include/__stddef_wchar_t.h \
+  D:/scoop/apps/mingw-mstorsjo-llvm-ucrt/22.1.5-20260505/lib/clang/22/include/__stddef_wint_t.h \
+  D:/Code/Project/filesys/filesys.h
