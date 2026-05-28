@@ -37,4 +37,5 @@ int bfree(unsigned int block_num) {
     fwrite(block_buf, 1, BLOCKSIZ, fd);
     filsys.s_nfree++;
     filsys.s_fmod=SUPDATE;
+    return 0;
 }

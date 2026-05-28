@@ -1,8 +1,7 @@
-/*访问控制函数access()(文件名access.c)*/
+/*璁块棶鎺у埗鍑芥暟access()(鏂囦欢鍚峚ccess.c)*/
 
 #include <stdio.h>
 #include "filesys.h"
-#include <unistd.h>
 
 uint32_t file_access(unsigned int user_id, struct inode *inode, uint16_t mode) {
     switch (mode) {

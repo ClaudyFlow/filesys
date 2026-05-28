@@ -1,9 +1,8 @@
-/* open.c — 打开文件 */
+/* open.c 鈥� 鎵撳紑鏂囦欢 */
 #include <stdio.h>
 #include <stdint.h>
 #include "filesys.h"
 #include <stdlib.h>
-#include <unistd.h>
 
 uint16_t aopen(unsigned short uid, char *filename, unsigned short openmode) {
     unsigned int dinodeid;
@@ -47,7 +46,7 @@ uint16_t aopen(unsigned short uid, char *filename, unsigned short openmode) {
         return 0;
     }
     user[uid].u_ofile[j] = 1;
-    /* 如果是 APPEND 模式，先释放文件原有所有块 */
+    /* 濡傛灉鏄� APPEND 妯″紡锛屽厛閲婃斁鏂囦欢鍘熸湁鎵�鏈夊潡 */
     if (openmode & FAPPEND) {
         int nblocks = (int)(inode->di_size / BLOCKSIZ) + 1;
         for (i = 0; i < nblocks; i++) {

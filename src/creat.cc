@@ -3,9 +3,9 @@
 #include <stdint.h>
 #include "filesys.h"
 #include <stdlib.h>
-#include <unistd.h>
 
-void fs_creat(unsigned int user_id, char *filename, unsigned short mode) {
+void fs_creat(unsigned int user_id, char *filename, unsigned short mode)
+{
     unsigned int di_ith, di_ino;
     struct inode *inode;
     int i, j;
@@ -16,10 +16,10 @@ void fs_creat(unsigned int user_id, char *filename, unsigned short mode) {
         inode = iget(di_ino);
         if (file_access(user_id, inode, mode) == 0) {
             iput(inode);
-            printf("\rcreat access not allowed \n");
+            printf("\ncreat access not allowed \n");
             return;
         }
-        /* 释放旧文件所有块 */
+        /* 释放原文件所有块 */
         int nblocks = (int)(inode->di_size / BLOCKSIZ) + 1;
         for (i = 0; i < nblocks; i++) {
             blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, i);

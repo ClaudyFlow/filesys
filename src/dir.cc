@@ -1,11 +1,10 @@
-/*dir.c — 目录操作*/
+/*dir.c 鈥� 鐩�褰曟搷浣�*/
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include "filesys.h"
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #pragma region _dir
 void _dir(void) {
@@ -63,9 +62,9 @@ void fs_mkdir(char *dirname) {
     inode->i_ino=dirid;
     dir.direct[dirpos].d_ino=inode->i_ino;
     dir.size++;
-    strcpy (buf[0].d_name,".");
+    strcpy((char*)buf[0].d_name,".");
     buf[0]. d_ino=dirid;
-    strcpy(buf[1].d_name,"..");
+    strcpy((char*)buf[1].d_name,"..");
     buf[1].d_ino =cur_path_inode->i_ino;
     block=balloc();
     fseek(fd, (long)block * BLOCKSIZ, SEEK_SET);
@@ -75,8 +74,8 @@ void fs_mkdir(char *dirname) {
     inode->di_mode= user[user_id].u_default_mode;
     inode->di_uid=user[user_id].u_uid;
     inode->di_gid= user[user_id].u_gid;
-    /* TODO: 建立 inode->di_addr 的页表链并写入 block */
-    inode->di_addr = 0; /* 暂时占位，后续建立页表时更新 */
+    /* TODO: 寤虹珛 inode->di_addr 鐨勯〉琛ㄩ摼骞跺啓鍏� block */
+    inode->di_addr = 0; /* 鏆傛椂鍗犱綅锛屽悗缁�寤虹珛椤佃〃鏃舵洿鏂� */
     iput(inode);
     return;
 }
@@ -119,7 +118,7 @@ void fs_chdir(char * dirname) {
 
     for (i=0; i<dir.size; i+=BLOCKSIZ/(DIRSIZ+2)) {
         block = balloc();
-        /* TODO: 更新 cur_path_inode->di_addr 页表，写入新 block */
+        /* TODO: 鏇存柊 cur_path_inode->di_addr 椤佃〃锛屽啓鍏ユ柊 block */
         fseek(fd, (long)block*BLOCKSIZ, SEEK_SET);
         fwrite(&dir.direct[j],1,BLOCKSIZ, fd);
     }
