@@ -26,19 +26,19 @@ void fs_format(void) {
     /* 0. 初始化密码表 */
     passwd[0].p_uid = 2116;
     passwd[0].p_gid = 03;
-    strcpy(passwd[0].password, "dddd");
+    strcpy((char*)passwd[0].password, "dddd");
     passwd[1].p_uid = 2117;
     passwd[1].p_gid = 03;
-    strcpy(passwd[1].password, "bbbb");
+    strcpy((char*)passwd[1].password, "bbbb");
     passwd[2].p_uid = 2118;
     passwd[2].p_gid = 04;
-    strcpy(passwd[2].password, "abcd");
+    strcpy((char*)passwd[2].password, "abcd");
     passwd[3].p_uid = 2119;
     passwd[3].p_gid = 04;
-    strcpy(passwd[3].password, "cccc");
+    strcpy((char*)passwd[3].password, "cccc");
     passwd[4].p_uid = 2220;
     passwd[4].p_gid = 05;
-    strcpy(passwd[4].password, "eeee");
+    strcpy((char*)passwd[4].password, "eeee");
     for (i = 5; i < PWDNUM; i++) {
         passwd[i].p_uid = 0;
         passwd[i].p_gid = 0;
@@ -55,11 +55,11 @@ void fs_format(void) {
     inode->di_mode = DEFAULTMODE | DIDIR;
     inode->di_size = 3 * (DIRSIZ + 2);
     inode->di_addr = 0ULL << 12;
-    strcpy(dir_buf[0].d_name, "..");
+    strcpy((char*)dir_buf[0].d_name, "..");
     dir_buf[0].d_ino = 1;
-    strcpy(dir_buf[1].d_name, ".");
+    strcpy((char*)dir_buf[1].d_name, ".");
     dir_buf[1].d_ino = 1;
-    strcpy(dir_buf[2].d_name, "etc");
+    strcpy((char*)dir_buf[2].d_name, "etc");
     dir_buf[2].d_ino = 2;
     fseek(fd, DATASTART, SEEK_SET);
     fwrite(dir_buf, 1, 3 * (DIRSIZ + 2), fd);
@@ -70,11 +70,11 @@ void fs_format(void) {
     inode->di_mode = DEFAULTMODE | DIDIR;
     inode->di_size = 3 * (DIRSIZ + 2);
     inode->di_addr = 0ULL << 12;
-    strcpy(dir_buf[0].d_name, "..");
+    strcpy((char*)dir_buf[0].d_name, "..");
     dir_buf[0].d_ino = 1;
-    strcpy(dir_buf[1].d_name, ".");
+    strcpy((char*)dir_buf[1].d_name, ".");
     dir_buf[1].d_ino = 2;
-    strcpy(dir_buf[2].d_name, "password");
+    strcpy((char*)dir_buf[2].d_name, "password");
     dir_buf[2].d_ino = 3;
     fseek(fd, DATASTART + BLOCKSIZ * 1, SEEK_SET);
     fwrite(dir_buf, 1, 3 * (DIRSIZ + 2), fd);

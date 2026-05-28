@@ -8,7 +8,7 @@
 void fs_login(unsigned short uid, char *passwd) {
     int i, j;
     for (i = 0; i < PWDNUM; i++) {
-        if ((uid == pwd[i].p_uid) && (strcmp(passwd, pwd[i].password))) {
+        if ((uid == pwd[i].p_uid) && (strcmp(passwd, (char*)pwd[i].password))) {
             for (j = 0; j < USERNUM; j++)
                 if (user[j].u_uid == 0)
                     break;

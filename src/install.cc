@@ -40,7 +40,7 @@ void fs_install(void) {
     cur_path_inode=iget(1);
     dir.size=cur_path_inode->di_size/(DIRSIZ+2);
     for(i=0; i<DIRNUM; i++) {
-        strcpy(dir.direct[i].d_name,"                 ");
+        strcpy((char*)dir.direct[i].d_name,"                 ");
         dir.direct[i].d_ino=0;
     }
     for(i=0; i<dir.size/(BLOCKSIZ/(DIRSIZ+2)); i++) {

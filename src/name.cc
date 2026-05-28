@@ -5,7 +5,7 @@
 uint32_t namei(char *name) { /* namei */
     int i,notfound=1;
     for (i=0; ((i<dir.size)&&(notfound)); i++) {
-        if ((!strcmp(dir.direct[i].d_name,name)) && (dir.direct[1].d_ino!=0))
+        if ((!strcmp((char*)dir.direct[i].d_name, name)) && (dir.direct[1].d_ino!=0))
             return i;   /* find */
     }
     /* notfind */
@@ -24,7 +24,7 @@ uint16_t iname(char *name) { /* iname */
         printf("\nThe current directory is full! !\n");
         return 0;
     } else {
-        strcpy(name, dir.direct[i].d_name);
+        strcpy(name, (char*)dir.direct[i].d_name);
         return i;
     }
 }

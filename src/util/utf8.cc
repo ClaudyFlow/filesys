@@ -56,7 +56,7 @@ int main() {
     SetConsoleOutputCP(65001);
     SetConsoleCP(65001);
 
-    strcpy(entry.d_name, "新建文件1");
+    strcpy((char*)entry.d_name, "新建文件1");
     entry.d_ino = 1;
 
     printf("hex + unicode:\n");
