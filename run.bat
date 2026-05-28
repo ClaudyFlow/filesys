@@ -1,3 +1,3 @@
 @echo off
-cd /d D:\Code\Project\filesysorig
-bin\filesys.exe
+cd /d D:\filesys\build
+main.exe

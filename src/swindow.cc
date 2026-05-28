@@ -7,7 +7,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
     HWND hwnd;
     MSG  Msg;
     WNDCLASS wndclass;
-    char lpszClassName[]="´°¿Ú";
+    char lpszClassName[]="ï¿½ï¿½ï¿½ï¿½";
     char lpszTitle[]="my_windows";
 
     wndclass.style=0;
@@ -56,3 +56,4 @@ LRESULT CALLBACK WndProc(HWND   hwnd,
     }
     return(0);
 }
+

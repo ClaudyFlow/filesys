@@ -188,7 +188,7 @@ int main(void) {
     printf("镜像总块数: %d, 大小: %d 字节\n", total_blocks, total_blocks * BSIZ);
 
     // 全零镜像
-    uint8_t *zero = calloc(1, total_blocks * BSIZ);
+    uint8_t *zero = (uint8_t*)calloc(1, total_blocks * BSIZ);
     fwrite(zero, 1, total_blocks * BSIZ, fp);
     free(zero);
 
@@ -381,3 +381,4 @@ int main(void) {
 
     return 0;
 }
+

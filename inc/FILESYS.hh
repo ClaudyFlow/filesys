@@ -48,7 +48,7 @@
 struct inode {
     struct inode *i_forw;
     struct inode *i_back;
-    int8_t  i_flag;
+    char  i_flag;
     uint32_t i_ino;
     uint32_t i_count;
     uint16_t di_number;
@@ -74,7 +74,7 @@ struct dinode {
 };
 
 struct direct {
-    int8_t d_name[14];    ///< UTF-8 自分割，无需长度字段
+    char d_name[14];    ///< UTF-8 自分割，无需长度字段
     uint32_t d_ino; ///< inode 号（0=空）
 };
 
@@ -89,14 +89,14 @@ struct filsys {
     uint32_t s_inode[NICINOD];
     uint32_t s_pgd;     // PGD 基址块号（x86-64页表根）
     uint32_t s_rinode;
-    int8_t s_fmod;
+    char s_fmod;
 };
 
 ///密码结构体
 struct pwd {
     uint16_t p_uid;///<用户id
     uint16_t p_gid;///<用户组id
-    int8_t password[PWDSIZ];///<密码，字符数组，可以限制范围
+    char password[PWDSIZ];///<密码，字符数组，可以限制范围
 };
 
 struct dir {
@@ -109,7 +109,7 @@ struct hinode {
 };
 //文件结构体
 struct file {
-    int8_t f_flag;// 文件状态
+    char f_flag;// 文件状态
     uint32_t f_count; //文件数量
     struct inode *f_inode; // 文件节点
     uint64_t f_offset;  // 文件偏移量？

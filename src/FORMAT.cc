@@ -118,3 +118,4 @@ void fs_format(void) {
     fseek(fd, BLOCKSIZ, SEEK_SET);
     fwrite(&filsys, 1, sizeof(struct filsys), fd);
 }
+

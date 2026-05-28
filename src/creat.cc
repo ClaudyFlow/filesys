@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "filesys.h"
 #include <stdlib.h>
-#include <unistd.h>
+
 
 void fs_creat(unsigned int user_id, char *filename, unsigned short mode) {
     unsigned int di_ith, di_ino;
@@ -69,3 +69,4 @@ void fs_creat(unsigned int user_id, char *filename, unsigned short mode) {
         return;
     }
 }
+

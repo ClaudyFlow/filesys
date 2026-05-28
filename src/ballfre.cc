@@ -27,7 +27,7 @@ unsigned int balloc() {
 
 int bfree(unsigned int block_num) {
     int i;
-    if (filsys.s_pfree==0) {	/* if s-free full */
+    if (filsys.s_pfree==0) {
         block_buf[NICFREE]=NICFREE;
         for (i=0; i<NICFREE; i++) {
             block_buf[i]=filsys.s_free[NICFREE-1-i];
@@ -37,4 +37,5 @@ int bfree(unsigned int block_num) {
     fwrite(block_buf, 1, BLOCKSIZ, fd);
     filsys.s_nfree++;
     filsys.s_fmod=SUPDATE;
+    return 0;
 }

@@ -1,14 +1,15 @@
 #pragma region include::header
-#include "file/cat.hh" //included <windows.h>
+#include "file/cat.hh"
 #pragma endregion include::header
 
 #pragma region include::project
-#include "file/file.hh" // included <windows.h>
-#include "file/dir.hh" // included <windows.h>
+#include "file/file.hh"
+#include "file/dir.hh"
 #include "util/utf8.hh"
 #pragma endregion include::project
 
 #pragma region include::standard
+#include <cstdio>
 #pragma endregion include::standard
 
 //==============================================================================
@@ -38,3 +39,4 @@ bool cat_files(HANDLE fd_out, const char **paths) {
     }
     return true;
 }
+

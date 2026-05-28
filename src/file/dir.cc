@@ -1,5 +1,5 @@
 #pragma region include::header
-#include "file/dir.hh" //included <windows.h>
+#include "file/dir.hh"
 #pragma endregion include::header
 
 #pragma region include::project
@@ -7,6 +7,7 @@
 #pragma endregion include::project
 
 #pragma region include::standard
+#include <cstdio>
 #pragma endregion include::standard
 
 //==============================================================================
@@ -99,3 +100,4 @@ bool dir_stat(const char *path, WIN32_FIND_DATA *fd) {
     FindClose(h);
     return true;
 }
+

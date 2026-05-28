@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "filesys.h"
 #include <stdlib.h>
-#include <unistd.h>
+
 void fs_halt(void) {
     struct inode *inode;
     int i, j;

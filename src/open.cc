@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "filesys.h"
 #include <stdlib.h>
-#include <unistd.h>
+
 
 uint16_t aopen(unsigned short uid, char *filename, unsigned short openmode) {
     unsigned int dinodeid;
@@ -59,3 +59,4 @@ uint16_t aopen(unsigned short uid, char *filename, unsigned short openmode) {
     }
     return j;
 }
+

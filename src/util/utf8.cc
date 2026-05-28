@@ -14,7 +14,7 @@
 #pragma endregion include::standard
 
 // 给定字符串和起始位置，读一个 UTF-8 字符，返回码点和字符字节数
-static void utf8_decode(const char *buf, int start, unsigned int *cp, int *blen) {
+static bool utf8_decode(const char *buf, int start, unsigned int *cp, int *blen) {
     unsigned char c = (unsigned char)buf[start];
     int len;
     if (c < 0x80) {
@@ -81,3 +81,4 @@ int main() {
 
     return 0;
 }
+

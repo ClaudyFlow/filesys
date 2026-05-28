@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <cstdlib>
 #include "filesys.h"
 
 void fs_install(void) {
