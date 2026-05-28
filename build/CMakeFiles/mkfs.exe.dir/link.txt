@@ -1,3 +1,0 @@
-D:\scoop\apps\cmake\current\bin\cmake.exe -E rm -f CMakeFiles\mkfs.exe.dir/objects.a
-D:\scoop\apps\mingw-mstorsjo-llvm-ucrt\current\bin\llvm-ar.exe qc CMakeFiles\mkfs.exe.dir/objects.a @CMakeFiles\mkfs.exe.dir\objects1.rsp
-D:\scoop\apps\mingw-mstorsjo-llvm-ucrt\current\bin\cc.exe -Wl,--whole-archive CMakeFiles\mkfs.exe.dir/objects.a -Wl,--no-whole-archive -o mkfs.exe.exe -Wl,--out-implib,libmkfs.exe.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\mkfs.exe.dir\linkLibs.rsp

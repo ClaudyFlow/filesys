@@ -1,3 +1,0 @@
-D:\scoop\apps\cmake\current\bin\cmake.exe -E rm -f CMakeFiles\main.exe.dir/objects.a
-D:\scoop\apps\mingw-mstorsjo-llvm-ucrt\current\bin\llvm-ar.exe qc CMakeFiles\main.exe.dir/objects.a @CMakeFiles\main.exe.dir\objects1.rsp
-D:\scoop\apps\mingw-mstorsjo-llvm-ucrt\current\bin\c++.exe -Wl,--whole-archive CMakeFiles\main.exe.dir/objects.a -Wl,--no-whole-archive -o main.exe.exe -Wl,--out-implib,libmain.exe.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\main.exe.dir\linkLibs.rsp
