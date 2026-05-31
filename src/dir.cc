@@ -68,11 +68,10 @@ void fs_mkdir(char *dirname) {
 
     dirpos = iname(dirname);
     inode = ialloc();
-    inode->i_ino = dirid;
     dir.direct[dirpos].d_ino = inode->i_ino;
     dir.size++;
     strcpy(buf[0].d_name, ".");
-    buf[0].d_ino = dirid;
+    buf[0].d_ino = inode->i_ino;
     strcpy(buf[1].d_name, "..");
     buf[1].d_ino = cur_path_inode->i_ino;
     block = balloc();

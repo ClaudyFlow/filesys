@@ -205,8 +205,9 @@ void cmd_format(void) {
     char confirm;
     printf("\n  [WARNING] This will ERASE all data on the disk!\n");
     printf("  Are you sure? (y/N): ");
-    confirm = getch();
+    confirm = getchar();
     printf("%c\n", confirm);
+    while (getchar() != '\n'); // clear rest of line
     if (confirm == 'y' || confirm == 'Y') {
         printf("\n  Formatting disk, please wait...\n");
         fs_format();
@@ -456,14 +457,16 @@ int main(void) {
         printf("  [OK] Filesystem created.\n\n");
     } else {
         printf("  Do you want to [f]ormat the disk or [l]oad existing? (f/l): ");
-        choice = getch();
+        choice = getchar();
         printf("%c\n", choice);
+        while (getchar() != '\n'); // clear rest of line
 
         if (choice == 'f' || choice == 'F') {
             printf("\n  [WARNING] Format will erase ALL data!\n");
             printf("  Are you sure? (y/N): ");
-            choice = getch();
+            choice = getchar();
             printf("%c\n", choice);
+            while (getchar() != '\n'); // clear rest of line
             if (choice == 'y' || choice == 'Y') {
                 fs_format();
             } else {

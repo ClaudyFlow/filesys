@@ -55,7 +55,7 @@ uint16_t aopen(uint16_t uid, char *filename, uint16_t openmode) {
         iput(inode);
         return 0;
     }
-    user[uid].u_ofile[j] = 1;
+    user[uid].u_ofile[j] = i;
     if (openmode & FAPPEND) {
         int32_t nblocks = (int32_t)(inode->di_size / BLOCKSIZ) + 1;
         for (i = 0; i < nblocks; i++) {
