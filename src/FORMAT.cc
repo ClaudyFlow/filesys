@@ -24,7 +24,7 @@ void fs_format(void) {
     char *buf;
     int32_t i, j;
 
-    fd = fopen("filesystem", "r+w+b");
+    fd = fopen("filesystem", "w+b");
     buf = (char *)malloc((DINODEBLK + FILEBLK + 2) * BLOCKSIZ * sizeof(char));
     if (buf == NULL) {
         printf("\nfile system file creat failed!\n");
@@ -54,6 +54,22 @@ void fs_format(void) {
         memset(passwd[i].password, 0, sizeof(passwd[i].password));
     }
 
+    uint32_t pgd_blk = balloc();
+    uint32_t pud_blk = balloc();
+    uint32_t pmd_blk = balloc();
+    uint32_t pte_blk = balloc();
+    uint32_t data_blk = balloc();
+
+    auto write_ptr = [&](uint32_t blk, uint32_t idx, uint64_t ptr) {
+        fseek(fd, (int64_t)blk * BLOCKSIZ + idx * (int)sizeof(uint64_t), SEEK_SET);
+        fwrite(&ptr, 1, sizeof(uint64_t), fd);
+    };
+
+    write_ptr(pgd_blk, 0, (uint64_t)pud_blk);
+    write_ptr(pud_blk, 0, (uint64_t)pmd_blk);
+    write_ptr(pmd_blk, 0, (uint64_t)pte_blk);
+    write_ptr(pte_blk, 0, (uint64_t)data_blk);
+
     inode = iget(0);
     inode->di_mode = DIEMPTY;
     iput(inode);
@@ -62,38 +78,58 @@ void fs_format(void) {
     inode->di_number = 1;
     inode->di_mode = DEFAULTMODE | DIDIR;
     inode->di_size = 3 * (DIRSIZ + 2);
-    inode->di_addr = 0ULL << 12;
-    strcpy((char *)dir_buf[0].d_name, "..");
+    inode->di_addr = 0ULL;
+    strcpy((char *)dir_buf[0].d_name, ".");
     dir_buf[0].d_ino = 1;
-    strcpy((char *)dir_buf[1].d_name, ".");
+    strcpy((char *)dir_buf[1].d_name, "..");
     dir_buf[1].d_ino = 1;
     strcpy((char *)dir_buf[2].d_name, "etc");
     dir_buf[2].d_ino = 2;
-    fseek(fd, DATASTART, SEEK_SET);
+    fseek(fd, (int64_t)data_blk * BLOCKSIZ, SEEK_SET);
     fwrite(dir_buf, 1, 3 * (DIRSIZ + 2), fd);
     iput(inode);
+
+    uint32_t pud2 = balloc();
+    uint32_t pmd2 = balloc();
+    uint32_t pte2 = balloc();
+    uint32_t data2 = balloc();
+
+    write_ptr(pgd_blk, 1, (uint64_t)pud2);
+    write_ptr(pud2, 0, (uint64_t)pmd2);
+    write_ptr(pmd2, 0, (uint64_t)pte2);
+    write_ptr(pte2, 0, (uint64_t)data2);
 
     inode = iget(2);
     inode->di_number = 1;
     inode->di_mode = DEFAULTMODE | DIDIR;
     inode->di_size = 3 * (DIRSIZ + 2);
-    inode->di_addr = 0ULL << 12;
-    strcpy((char *)dir_buf[0].d_name, "..");
-    dir_buf[0].d_ino = 1;
-    strcpy((char *)dir_buf[1].d_name, ".");
-    dir_buf[1].d_ino = 2;
+    inode->di_addr = 1ULL << 39;
+    strcpy((char *)dir_buf[0].d_name, ".");
+    dir_buf[0].d_ino = 2;
+    strcpy((char *)dir_buf[1].d_name, "..");
+    dir_buf[1].d_ino = 1;
     strcpy((char *)dir_buf[2].d_name, "password");
     dir_buf[2].d_ino = 3;
-    fseek(fd, DATASTART + BLOCKSIZ * 1, SEEK_SET);
+    fseek(fd, (int64_t)data2 * BLOCKSIZ, SEEK_SET);
     fwrite(dir_buf, 1, 3 * (DIRSIZ + 2), fd);
     iput(inode);
+
+    uint32_t pud3 = balloc();
+    uint32_t pmd3 = balloc();
+    uint32_t pte3 = balloc();
+    uint32_t data3 = balloc();
+
+    write_ptr(pgd_blk, 2, (uint64_t)pud3);
+    write_ptr(pud3, 0, (uint64_t)pmd3);
+    write_ptr(pmd3, 0, (uint64_t)pte3);
+    write_ptr(pte3, 0, (uint64_t)data3);
 
     inode = iget(3);
     inode->di_number = 1;
     inode->di_mode = DEFAULTMODE | DIFILE;
     inode->di_size = BLOCKSIZ;
-    inode->di_addr = 2ULL << 12;
-    fseek(fd, DATASTART + 2 * BLOCKSIZ, SEEK_SET);
+    inode->di_addr = 2ULL << 39;
+    fseek(fd, (int64_t)data3 * BLOCKSIZ, SEEK_SET);
     fwrite(passwd, 1, BLOCKSIZ, fd);
     iput(inode);
 
@@ -105,15 +141,16 @@ void fs_format(void) {
         fs.s_inode[i] = 4 + i;
     fs.s_pinode = 0;
     fs.s_rinode = NICINOD + 4;
+    fs.s_pgd = pgd_blk;
     block_buf[NICFREE - 1] = FILEBLK + 1;
     for (i = 0; i < NICFREE - 1; i++)
         block_buf[NICFREE - 2 - i] = FILEBLK - i;
-    fseek(fd, DATASTART + BLOCKSIZ * (FILEBLK - NICFREE - 1), SEEK_SET);
+    fseek(fd, (int64_t)(DATASTART + BLOCKSIZ * (FILEBLK - NICFREE - 1)), SEEK_SET);
     fwrite(block_buf, 1, BLOCKSIZ, fd);
     for (i = FILEBLK - NICFREE - 1; i > 2; i -= NICFREE) {
         for (j = 0; j < NICFREE; j++)
             block_buf[j] = i - j;
-        fseek(fd, DATASTART + BLOCKSIZ * (i - 1), SEEK_SET);
+        fseek(fd, (int64_t)(DATASTART + BLOCKSIZ * (i - 1)), SEEK_SET);
         fwrite(block_buf, 1, BLOCKSIZ, fd);
     }
     j = 1;

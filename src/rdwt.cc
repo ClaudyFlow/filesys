@@ -64,7 +64,6 @@ uint32_t fs_read(uint16_t cfd, uint32_t user_id, char *buf, uint32_t len) {
 
 #pragma region write
 uint32_t fs_write(uint16_t cfd, uint32_t user_id, char *buf, uint32_t len) {
-    uint64_t off;
     int32_t block, block_off, i, j;
     int32_t nblocks;
     struct inode *inode;
@@ -77,18 +76,26 @@ uint32_t fs_write(uint16_t cfd, uint32_t user_id, char *buf, uint32_t len) {
         return 0;
     }
     temp_buf = buf;
-    off = sys_ofile[user[user_id].u_ofile[cfd]].f_offset;
+    uint64_t off = sys_ofile[user[user_id].u_ofile[cfd]].f_offset;
     block_off = (int32_t)(off % BLOCKSIZ);
     block = (int32_t)(off / BLOCKSIZ);
 
     if (block_off + (int32_t)len < BLOCKSIZ) {
         blk = fs_translate(filsys.s_pgd, inode->di_addr, block);
+        if (blk == 0) {
+            blk = fs_alloc_block_for_inode(filsys.s_pgd, &inode->di_addr, inode->i_ino, block);
+        }
         fseek(fd, (int64_t)blk * BLOCKSIZ + block_off, SEEK_SET);
         fwrite(temp_buf, 1, len, fd);
+        sys_ofile[user[user_id].u_ofile[cfd]].f_offset += len;
+        if (off + len > inode->di_size) inode->di_size = off + len;
         return len;
     }
 
     blk = fs_translate(filsys.s_pgd, inode->di_addr, block);
+    if (blk == 0) {
+        blk = fs_alloc_block_for_inode(filsys.s_pgd, &inode->di_addr, inode->i_ino, block);
+    }
     fseek(fd, (int64_t)blk * BLOCKSIZ + block_off, SEEK_SET);
     fwrite(temp_buf, 1, BLOCKSIZ - block_off, fd);
     temp_buf += BLOCKSIZ - block_off;
@@ -97,24 +104,22 @@ uint32_t fs_write(uint16_t cfd, uint32_t user_id, char *buf, uint32_t len) {
     for (i = 0; i < (len - block_off) / BLOCKSIZ; i++) {
         blk = fs_translate(filsys.s_pgd, inode->di_addr, block + 1 + i);
         if (blk == 0) {
-            blk = balloc();
-            fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
-        } else {
-            fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
+            blk = fs_alloc_block_for_inode(filsys.s_pgd, &inode->di_addr, inode->i_ino, block + 1 + i);
         }
+        fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
         fwrite(temp_buf, 1, BLOCKSIZ, fd);
         temp_buf += BLOCKSIZ;
     }
+
     block_off = (len - block_off) % BLOCKSIZ;
     blk = fs_translate(filsys.s_pgd, inode->di_addr, (int32_t)(off / BLOCKSIZ + (len - block_off) / BLOCKSIZ));
     if (blk == 0) {
-        blk = balloc();
-        fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
-    } else {
-        fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
+        blk = fs_alloc_block_for_inode(filsys.s_pgd, &inode->di_addr, inode->i_ino, (int32_t)(off / BLOCKSIZ + (len - block_off) / BLOCKSIZ));
     }
+    fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
     fwrite(temp_buf, 1, block_off, fd);
     sys_ofile[user[user_id].u_ofile[cfd]].f_offset += len;
+    if (off + len > inode->di_size) inode->di_size = off + len;
     return len;
 }
 #pragma endregion

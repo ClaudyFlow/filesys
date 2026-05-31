@@ -24,7 +24,7 @@ struct inode *iget(uint32_t dinodeid) {
     else {
         temp = hinode[inodeid].i_forw;
         while (temp) {
-            if (temp->i_ino == inodeid) {
+            if (temp->i_ino == dinodeid) {
                 existed = 1;
                 temp->i_count++;
                 return temp;

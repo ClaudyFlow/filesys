@@ -64,6 +64,7 @@ constexpr uint64_t MAKE_LA(uint64_t pml4, uint64_t pdpt, uint64_t pd, uint64_t p
 // @return 物理块号，失败返回0
 //==============================================================================
 uint32_t fs_translate(uint32_t pgd_blk, uint64_t di_addr, uint64_t blk_num);
+uint32_t fs_alloc_block_for_inode(uint32_t pgd_blk, uint64_t *io_di_addr, uint64_t pml4_idx, uint64_t pte_idx);
 
 
 #endif /* INC_FILE_FSADDR */

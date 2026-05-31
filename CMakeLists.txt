@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
-project(filesys C CXX)
+project(filesys CXX)
 
-set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
 # 根目录 .cc 文件（主程序 + 工具）
@@ -47,6 +46,3 @@ include_directories(
 
 # 主程序
 add_executable(main ${C_FILES} ${CC_FILES} ${UTIL_FILES})
-
-# mkfs 工具
-add_executable(mkfs ${CMAKE_CURRENT_SOURCE_DIR}/src/file/mkfs.cc)

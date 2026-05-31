@@ -159,6 +159,7 @@ extern void fs_format(void);
 extern void fs_close(uint32_t user_id, uint16_t cfd);
 extern void fs_halt(void);
 extern uint32_t fs_translate(uint32_t pgd_blk, uint64_t di_addr, uint64_t blk_num);
+extern uint32_t fs_alloc_block_for_inode(uint32_t pgd_blk, uint64_t *io_di_addr, uint64_t pml4_idx, uint64_t pte_idx);
 extern void fs_delete(char *filename);
 
 

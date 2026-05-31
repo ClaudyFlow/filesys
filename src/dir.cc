@@ -33,11 +33,11 @@ void _dir(void) {
                 if (one) printf("x");
                 else printf("-");
             }
-            if (temp_inode->di_mode && DIFILE == 1) {
+            if (temp_inode->di_mode & DIFILE) {
                 printf("%I64u\n", (uint64_t)temp_inode->di_size);
                 printf("block chain:");
-                for (i = 0; i < temp_inode->di_size / BLOCKSIZ + 1; i++) {
-                    blk = fs_translate(filsys.s_pgd, temp_inode->di_addr, i);
+                for (j = 0; j < temp_inode->di_size / BLOCKSIZ + 1; j++) {
+                    blk = fs_translate(filsys.s_pgd, temp_inode->di_addr, j);
                     printf("%4d", blk);
                 }
                 printf("\n");
@@ -68,21 +68,22 @@ void fs_mkdir(char *dirname) {
 
     dirpos = iname(dirname);
     inode = ialloc();
-    dir.direct[dirpos].d_ino = inode->i_ino;
-    dir.size++;
+    uint64_t pml4_idx = inode->i_ino;
+    memset(buf, 0, sizeof(buf));
     strcpy(buf[0].d_name, ".");
     buf[0].d_ino = inode->i_ino;
     strcpy(buf[1].d_name, "..");
     buf[1].d_ino = cur_path_inode->i_ino;
-    block = balloc();
-    fseek(fd, (int64_t)block * BLOCKSIZ, SEEK_SET);
+    uint32_t data_blk = fs_alloc_block_for_inode(filsys.s_pgd, &inode->di_addr, pml4_idx, 0);
+    fseek(fd, (int64_t)data_blk * BLOCKSIZ, SEEK_SET);
     fwrite(buf, 1, BLOCKSIZ, fd);
     inode->di_size = 2 * (DIRSIZ + 2);
     inode->di_number = 1;
-    inode->di_mode = user[user_id].u_default_mode;
+    inode->di_mode = user[user_id].u_default_mode | DIDIR;
     inode->di_uid = user[user_id].u_uid;
     inode->di_gid = user[user_id].u_gid;
-    inode->di_addr = 0;
+    dir.direct[dirpos].d_ino = inode->i_ino;
+    dir.size++;
     iput(inode);
     return;
 }

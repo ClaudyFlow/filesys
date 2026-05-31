@@ -62,7 +62,7 @@ void ifree(uint32_t dinodeid) {
         filsys.s_pinode++;
     } else {
         if (dinodeid < filsys.s_rinode) {
-            filsys.s_inode[NICINOD] = dinodeid;
+            filsys.s_inode[NICINOD - 1] = dinodeid;
             filsys.s_rinode = dinodeid;
         }
     }
