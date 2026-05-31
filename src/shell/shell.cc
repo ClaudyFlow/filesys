@@ -1,10 +1,18 @@
 /* shell.cc — 虚拟文件系统命令行工具 */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <ctype.h>
-#include "filesys.h"
+#pragma region include::header
+#include "shell/shell.hh"
+#pragma endregion include::header
+#pragma region include::project
+#include "filesys.hh"
+#include "util/nano.hh"
+#pragma endregion include::project
+#pragma region include::standard
+#include <cctype>
+#include <cstdlib>
+#include <cstring>
+// exclude <cstdint>
+// exclude <cstdio>
+#pragma endregion include::standard
 
 /* ======================= 全局声明 ======================= */
 struct hinode hinode[NHINO];
@@ -23,8 +31,7 @@ static char token_buf[16][128];
 static int  tok_cnt;
 
 /* ======================= 工具函数 ======================= */
-static int split(char *line)
-{
+static int split(char *line) {
     char *p = line;
     tok_cnt = 0;
     while (*p && tok_cnt < 16) {
@@ -47,8 +54,7 @@ static int split(char *line)
     return tok_cnt;
 }
 
-static void prompt(void)
-{
+static void prompt(void) {
     if (user_id < 0)
         printf("guest@fs:/root> ");
     else
@@ -56,56 +62,73 @@ static void prompt(void)
     fflush(stdout);
 }
 
-static uint16_t cur_uid(void)
-{
+static uint16_t cur_uid(void) {
     if (user_id < 0) return 0;
     return user[user_id].u_uid;
 }
 
 /* ======================= 命令实现 ======================= */
 
-static void cmd_login(void)
-{
-    if (tok_cnt < 3) { printf("usage: login <uid> <password>\n"); return; }
-    unsigned short uid = (unsigned short)atoi(token_buf[1]);
+static void cmd_login(void) {
+    if (tok_cnt < 3) {
+        printf("usage: login <uid> <password>\n");
+        return;
+    }
+    unsigned short uid = (uint16_t)atoi(token_buf[1]);
     fs_login(uid, token_buf[2]);
-    int i; for (i = 0; i < USERNUM; i++)
-        if (user[i].u_uid == uid) { user_id = i; break; }
+    int i;
+    for (i = 0; i < USERNUM; i++)
+        if (user[i].u_uid == uid) {
+            user_id = i;
+            break;
+        }
 }
 
-static void cmd_logout(void)
-{
-    if (user_id < 0) { printf("not logged in\n"); return; }
+static void cmd_logout(void) {
+    if (user_id < 0) {
+        printf("not logged in\n");
+        return;
+    }
     fs_logout(user[user_id].u_uid);
     user_id = -1;
 }
 
-static void cmd_mkdir(void)
-{
-    if (tok_cnt < 2) { printf("usage: mkdir <dir>\n"); return; }
+static void cmd_mkdir(void) {
+    if (tok_cnt < 2) {
+        printf("usage: mkdir <dir>\n");
+        return;
+    }
     fs_mkdir(token_buf[1]);
 }
 
-static void cmd_ls(void) { _dir(); }
+static void cmd_ls(void) {
+    _dir();
+}
 
-static void cmd_cd(void)
-{
-    if (tok_cnt < 2) { printf("usage: cd <dir>\n"); return; }
+static void cmd_cd(void) {
+    if (tok_cnt < 2) {
+        printf("usage: cd <dir>\n");
+        return;
+    }
     fs_chdir(token_buf[1]);
 }
 
-static void cmd_create(void)
-{
-    if (tok_cnt < 2) { printf("usage: create <file> [mode]\n"); return; }
+static void cmd_create(void) {
+    if (tok_cnt < 2) {
+        printf("usage: create <file> [mode]\n");
+        return;
+    }
     unsigned short mode = (tok_cnt >= 3)
-        ? (unsigned short)strtol(token_buf[2], NULL, 8)
-        : DEFAULTMODE;
+                          ? (uint16_t)strtol(token_buf[2], NULL, 8)
+                          : DEFAULTMODE;
     fs_creat(cur_uid(), token_buf[1], mode);
 }
 
-static void cmd_open(void)
-{
-    if (tok_cnt < 2) { printf("usage: open <file> [r|w|a]\n"); return; }
+static void cmd_open(void) {
+    if (tok_cnt < 2) {
+        printf("usage: open <file> [r|w|a]\n");
+        return;
+    }
     unsigned short omode = FREAD;
     if (tok_cnt >= 3) {
         if (token_buf[2][0] == 'w') omode = FWRITE;
@@ -115,11 +138,13 @@ static void cmd_open(void)
     if (cfd) printf("fd=%u\n", cfd);
 }
 
-static void cmd_read(void)
-{
-    if (tok_cnt < 3) { printf("usage: read <fd> <n>\n"); return; }
-    unsigned short cfd = (unsigned short)atoi(token_buf[1]);
-    unsigned len = (unsigned)atoi(token_buf[2]);
+static void cmd_read(void) {
+    if (tok_cnt < 3) {
+        printf("usage: read <fd> <n>\n");
+        return;
+    }
+    unsigned short cfd = (uint16_t)atoi(token_buf[1]);
+    uint32_t len = (uint32_t)atoi(token_buf[2]);
     char *buf = (char *)malloc(len + 1);
     unsigned n = fs_read(cfd, user_id, buf, len);
     buf[n] = '\0';
@@ -127,29 +152,37 @@ static void cmd_read(void)
     free(buf);
 }
 
-static void cmd_write(void)
-{
-    if (tok_cnt < 3) { printf("usage: write <fd> <text>\n"); return; }
-    unsigned short cfd = (unsigned short)atoi(token_buf[1]);
+static void cmd_write(void) {
+    if (tok_cnt < 3) {
+        printf("usage: write <fd> <text>\n");
+        return;
+    }
+    unsigned short cfd = (uint16_t)atoi(token_buf[1]);
     fs_write(cfd, user_id, token_buf[2], strlen(token_buf[2]));
 }
 
-static void cmd_close(void)
-{
-    if (tok_cnt < 2) { printf("usage: close <fd>\n"); return; }
-    unsigned short cfd = (unsigned short)atoi(token_buf[1]);
+static void cmd_close(void) {
+    if (tok_cnt < 2) {
+        printf("usage: close <fd>\n");
+        return;
+    }
+    unsigned short cfd = (uint16_t)atoi(token_buf[1]);
     fs_close(user_id, cfd);
 }
 
-static void cmd_delete(void)
-{
-    if (tok_cnt < 2) { printf("usage: delete <file>\n"); return; }
+static void cmd_delete(void) {
+    if (tok_cnt < 2) {
+        printf("usage: delete <file>\n");
+        return;
+    }
     fs_delete(token_buf[1]);
 }
 
-static void cmd_cat(void)
-{
-    if (tok_cnt < 2) { printf("usage: cat <file>\n"); return; }
+static void cmd_cat(void) {
+    if (tok_cnt < 2) {
+        printf("usage: cat <file>\n");
+        return;
+    }
     uint16_t cfd = aopen(cur_uid(), token_buf[1], FREAD);
     if (!cfd) return;
     char buf[256];
@@ -161,13 +194,20 @@ static void cmd_cat(void)
     fs_close(user_id, cfd);
 }
 
+static void cmd_nano(void) {
+    if (tok_cnt < 2) {
+        printf("usage: nano <file>\n");
+        return;
+    }
+    nano_edit(token_buf[1], cur_uid());
+}
+
 /* ======================= 主循环 ======================= */
-int main(void)
-{
+int main(void) {
     user_id = -1;
 
     printf("\n=== Virtual File System Shell ===\n");
-    printf("Commands: login logout mkdir ls cd create open read write close delete cat help\n\n");
+    printf("Commands: login logout mkdir ls cd create open read write close delete cat nano help\n\n");
 
     printf("Format the disk first? (y/n): ");
     if (getchar() == 'y') {
@@ -194,19 +234,33 @@ int main(void)
         split(line_buf);
         if (tok_cnt == 0) continue;
 
-             if (strcmp(token_buf[0], "login")   == 0) { cmd_login();   }
-        else if (strcmp(token_buf[0], "logout")  == 0) { cmd_logout();  }
-        else if (strcmp(token_buf[0], "mkdir")   == 0) { cmd_mkdir();   }
-        else if (strcmp(token_buf[0], "ls")      == 0) { cmd_ls();      }
-        else if (strcmp(token_buf[0], "cd")      == 0) { cmd_cd();      }
-        else if (strcmp(token_buf[0], "create")  == 0) { cmd_create();  }
-        else if (strcmp(token_buf[0], "open")    == 0) { cmd_open();    }
-        else if (strcmp(token_buf[0], "read")    == 0) { cmd_read();    }
-        else if (strcmp(token_buf[0], "write")   == 0) { cmd_write();   }
-        else if (strcmp(token_buf[0], "close")   == 0) { cmd_close();   }
-        else if (strcmp(token_buf[0], "delete")  == 0) { cmd_delete();  }
-        else if (strcmp(token_buf[0], "cat")     == 0) { cmd_cat();     }
-        else if (strcmp(token_buf[0], "help")    == 0) {
+        if (strcmp(token_buf[0], "login")   == 0) {
+            cmd_login();
+        } else if (strcmp(token_buf[0], "logout")  == 0) {
+            cmd_logout();
+        } else if (strcmp(token_buf[0], "mkdir")   == 0) {
+            cmd_mkdir();
+        } else if (strcmp(token_buf[0], "ls")      == 0) {
+            cmd_ls();
+        } else if (strcmp(token_buf[0], "cd")      == 0) {
+            cmd_cd();
+        } else if (strcmp(token_buf[0], "create")  == 0) {
+            cmd_create();
+        } else if (strcmp(token_buf[0], "open")    == 0) {
+            cmd_open();
+        } else if (strcmp(token_buf[0], "read")    == 0) {
+            cmd_read();
+        } else if (strcmp(token_buf[0], "write")   == 0) {
+            cmd_write();
+        } else if (strcmp(token_buf[0], "close")   == 0) {
+            cmd_close();
+        } else if (strcmp(token_buf[0], "delete")  == 0) {
+            cmd_delete();
+        } else if (strcmp(token_buf[0], "cat")     == 0) {
+            cmd_cat();
+        } else if (strcmp(token_buf[0], "nano")    == 0) {
+            cmd_nano();
+        } else if (strcmp(token_buf[0], "help")    == 0) {
             printf("login <uid> <pass>   login\n"
                    "logout               logout\n"
                    "mkdir <dir>          make directory\n"
@@ -219,6 +273,7 @@ int main(void)
                    "close <fd>           close fd\n"
                    "delete <file>        delete file\n"
                    "cat <file>           show file\n"
+                   "nano <file>          edit file\n"
                    "help                 this help\n");
         } else {
             printf("unknown: %s (try help)\n", token_buf[0]);

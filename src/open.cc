@@ -1,14 +1,23 @@
-/* open.c — 打开文件 */
-#include <stdio.h>
-#include <stdint.h>
-#include "filesys.h"
-#include <stdlib.h>
+/* open.cc — 打开文件 */
 
+#pragma region include::header
+#include "open.hh"
+#pragma endregion include::header
 
-uint16_t aopen(unsigned short uid, char *filename, unsigned short openmode) {
-    unsigned int dinodeid;
+#pragma region include::project
+#include "filesys.hh"
+#pragma endregion include::project
+
+#pragma region include::standard
+#include <cstdlib>
+// #include <cstdint>
+// #include <cstdio>
+#pragma endregion include::standard
+
+uint16_t aopen(uint16_t uid, char *filename, uint16_t openmode) {
+    uint32_t dinodeid;
     struct inode *inode;
-    int i, j;
+    int32_t i, j;
     uint32_t blk;
 
     dinodeid = namei(filename);
@@ -41,22 +50,20 @@ uint16_t aopen(unsigned short uid, char *filename, unsigned short openmode) {
         if (user[uid].u_ofile[j] == 0)
             break;
     if (j == NOFILE) {
-        printf("\nuser open file too much!!! \n");
+        printf("\nuser open file too much!!!\n");
         sys_ofile[i].f_count = 0;
         iput(inode);
         return 0;
     }
     user[uid].u_ofile[j] = 1;
-    /* 如果是 APPEND 模式，先释放文件原有所有块 */
     if (openmode & FAPPEND) {
-        int nblocks = (int)(inode->di_size / BLOCKSIZ) + 1;
+        int32_t nblocks = (int32_t)(inode->di_size / BLOCKSIZ) + 1;
         for (i = 0; i < nblocks; i++) {
-            blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, i);
+            blk = fs_translate(filsys.s_pgd, inode->di_addr, i);
             if (blk != 0)
                 bfree(blk);
         }
         inode->di_size = 0;
     }
-    return j;
+    return (uint16_t)j;
 }
-

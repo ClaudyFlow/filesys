@@ -3,19 +3,22 @@
 //   dump 0     查单个块
 //   dump 1 5   从块1开始查5个块
 //   dump all   查整个镜像
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#pragma region include::standard
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#pragma endregion include::standard
 
 #define BLOCKSIZ 512
 
 // 字节 → 可打印字符，否则 '.'
-static char printable(unsigned char c) {
+static char printable(uint8_t c) {
     return (c >= 0x20 && c <= 0x7E) ? c : '.';
 }
 
 // 打印一行的 16 字节 hex + ascii
-static void hex_line(const unsigned char *buf, int offset, int len) {
+static void hex_line(const uint8_t *buf, int offset, int len) {
     printf("%08X  ", offset);
     for (int i = 0; i < 16; i++) {
         if (i < len)
@@ -33,7 +36,7 @@ static void hex_line(const unsigned char *buf, int offset, int len) {
 
 // dump 若干块
 static void dump_blocks(FILE *fp, int start, int count) {
-    unsigned char buf[BLOCKSIZ];
+    uint8_t buf[BLOCKSIZ];
     int blk;
     for (blk = start; blk < start + count; blk++) {
         fseek(fp, (long)blk * BLOCKSIZ, SEEK_SET);
@@ -57,7 +60,7 @@ static void dump_blocks(FILE *fp, int start, int count) {
 
 // 查整个镜像的概要（每块只显示前 16 字节）
 static void dump_summary(FILE *fp) {
-    unsigned char buf[16];
+    uint8_t buf[16];
     fseek(fp, 0, SEEK_END);
     long fsize = ftell(fp);
     int total_blocks = (int)(fsize / BLOCKSIZ);
@@ -112,4 +115,3 @@ int main(int argc, char *argv[]) {
     fclose(fp);
     return 0;
 }
-

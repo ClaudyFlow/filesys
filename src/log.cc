@@ -1,14 +1,24 @@
-/* log.c — 登录登出 */
-#include <stdio.h>
-#include <stdint.h>
-#include "filesys.h"
-#include <stdlib.h>
-#include <string.h>
+/* log.cc — 登录登出 */
 
-void fs_login(unsigned short uid, char *passwd) {
-    int i, j;
+#pragma region include::header
+#include "log.hh"
+#pragma endregion include::header
+
+#pragma region include::project
+#include "filesys.hh"
+#pragma endregion include::project
+
+#pragma region include::standard
+#include <cstdlib>
+#include <cstring>
+// #include <cstdint>
+// #include <cstdio>
+#pragma endregion include::standard
+
+void fs_login(uint16_t uid, char *passwd) {
+    int32_t i, j;
     for (i = 0; i < PWDNUM; i++) {
-        if ((uid == pwd[i].p_uid) && (strcmp(passwd, (char*)pwd[i].password))) {
+        if ((uid == pwd[i].p_uid) && (strcmp(passwd, (char *)pwd[i].password))) {
             for (j = 0; j < USERNUM; j++)
                 if (user[j].u_uid == 0)
                     break;
@@ -26,8 +36,8 @@ void fs_login(unsigned short uid, char *passwd) {
     printf("\n incorrect password\n");
 }
 
-void fs_logout(unsigned short uid) {
-    int i, j, sys_no;
+void fs_logout(uint16_t uid) {
+    int32_t i, j, sys_no;
     struct inode *inode;
     for (i = 0; i < USERNUM; i++)
         if (uid == user[i].u_uid)
@@ -46,4 +56,3 @@ void fs_logout(unsigned short uid) {
         }
     }
 }
-

@@ -8,6 +8,8 @@
 
 #pragma region include::standard
 #include <cstdio>
+// exclude <cstdint>
+// exclude <windows.h>
 #pragma endregion include::standard
 
 //==============================================================================
@@ -100,4 +102,3 @@ bool dir_stat(const char *path, WIN32_FIND_DATA *fd) {
     FindClose(h);
     return true;
 }
-

@@ -1,8 +1,11 @@
 // mkfs.c — 创建虚拟磁盘镜像（x86-64四级页表结构，块大小512字节）
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
+
+#pragma region include::standard
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#pragma endregion include::standard
 
 #define BLOCKSIZ      512
 #define DINODEBLK     32
@@ -381,4 +384,3 @@ int main(void) {
 
     return 0;
 }
-

@@ -1,31 +1,36 @@
-/*halt.c*/
-#include <stdio.h>
-#include "filesys.h"
-#include <stdlib.h>
+/* halt.cc — 关机 */
+
+#pragma region include::header
+#include "halt.hh"
+#pragma endregion include::header
+
+#pragma region include::project
+#include "filesys.hh"
+#pragma endregion include::project
+
+#pragma region include::standard
+#include <cstdlib>
+#pragma endregion include::standard
 
 void fs_halt(void) {
-    struct inode *inode;
-    int i, j;
-    /* 1.write back the current dir */
-    fs_chdir("..");
-    iput (cur_path_inode);
-    /* 2.free the u_ofile and sys_ofile and inode */
-    for (i=0; i<USERNUM; i++) {
-        if (user[i].u_uid !=0) {
-            for	(j=0; j<NOFILE; j++) {
-                if (user[i].u_ofile[j]!=SYSOPENFILE+1) {
+    int32_t i, j;
+    (void)i;
+    (void)j;
+    fs_chdir((char *)"..");
+    iput(cur_path_inode);
+    for (i = 0; i < USERNUM; i++) {
+        if (user[i].u_uid != 0) {
+            for (j = 0; j < NOFILE; j++) {
+                if (user[i].u_ofile[j] != SYSOPENFILE + 1) {
                     fs_close(user[i].u_uid, user[i].u_ofile[j]);
-                    user[i].u_ofile[j]=SYSOPENFILE+1;
+                    user[i].u_ofile[j] = SYSOPENFILE + 1;
                 }
             }
         }
     }
-    /*	3.write back the filesys to the disk */
     fseek(fd, BLOCKSIZ, SEEK_SET);
-    fwrite(&filsys, 1, sizeof(struct filsys),fd);
-    /* 4. close the file system column */
+    fwrite(&filsys, 1, sizeof(struct filsys), fd);
     fclose(fd);
-    /*5. say GOOD BYE to all the user */
     printf("\nGood Bye. See You Next Time. Please turn off the switch\n");
     exit(0);
 }

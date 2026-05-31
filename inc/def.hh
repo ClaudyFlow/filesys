@@ -1,14 +1,13 @@
-#ifndef INC_FILE_DEF_HH
-#define INC_FILE_DEF_HH
-#pragma once
+#ifndef INC_DEF
+#define INC_DEF
 
 #pragma region include::standard
-#include <cstdint>   // int64_t, uint32_t 等
+#include <cstdint>
 #pragma endregion include::standard
 
 // 文件系统预留空间大小（可按需调整）
-constexpr uint32_t FS_BLOCK_SIZE = 4096;   // 块大小 4KB
-constexpr uint32_t FS_MAX_NAME  = 255;     // 文件名最大长度
+constexpr uint32_t FS_BLOCK_SIZE = 4096; // 块大小 4KB
+constexpr uint32_t FS_MAX_NAME  = 255; // 文件名最大长度
 
 // 通用错误码
 enum FileError {
@@ -20,4 +19,4 @@ enum FileError {
     ERR_PERM  = -5,
 };
 
-#endif // INC_FILE_DEF_HH
+#endif /* INC_DEF */

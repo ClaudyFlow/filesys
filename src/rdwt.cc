@@ -1,13 +1,23 @@
-/*rdwt.c — x86-64四级页表读写*/
-#include <stdio.h>
-#include <stdint.h>
-#include "filesys.h"
+/* rdwt.cc — 文件读写 */
+
+#pragma region include::header
+#include "rdwt.hh"
+#pragma endregion include::header
+
+#pragma region include::project
+#include "filesys.hh"
+#pragma endregion include::project
+
+#pragma region include::standard
+// #include <cstdio>
+// #include <cstdint>
+#pragma endregion include::standard
 
 #pragma region read
-uint32_t fs_read(unsigned short cfd, unsigned int user_id, char *buf, unsigned int len) {
-    unsigned long off;
-    int block, block_off, i, j;
-    int nblocks;
+uint32_t fs_read(uint16_t cfd, uint32_t user_id, char *buf, uint32_t len) {
+    uint64_t off;
+    int32_t block, block_off, i, j;
+    int32_t nblocks;
     struct inode *inode;
     char *temp_buf;
     uint32_t blk;
@@ -20,32 +30,32 @@ uint32_t fs_read(unsigned short cfd, unsigned int user_id, char *buf, unsigned i
     temp_buf = buf;
     off = sys_ofile[user[user_id].u_ofile[cfd]].f_offset;
     if ((off + len) > inode->di_size) len = inode->di_size - off;
-    block_off = (int)(off % BLOCKSIZ);
-    block = (int)(off / BLOCKSIZ);
-    nblocks = (int)((inode->di_size + BLOCKSIZ - 1) / BLOCKSIZ);
+    block_off = (int32_t)(off % BLOCKSIZ);
+    block = (int32_t)(off / BLOCKSIZ);
+    nblocks = (int32_t)((inode->di_size + BLOCKSIZ - 1) / BLOCKSIZ);
 
-    if (block_off + len < BLOCKSIZ) {
-        blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, block);
-        fseek(fd, (long)blk * BLOCKSIZ + block_off, SEEK_SET);
+    if (block_off + (int32_t)len < BLOCKSIZ) {
+        blk = fs_translate(filsys.s_pgd, inode->di_addr, block);
+        fseek(fd, (int64_t)blk * BLOCKSIZ + block_off, SEEK_SET);
         fread(buf, 1, len, fd);
         return len;
     }
 
-    blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, block);
-    fseek(fd, (long)blk * BLOCKSIZ + block_off, SEEK_SET);
+    blk = fs_translate(filsys.s_pgd, inode->di_addr, block);
+    fseek(fd, (int64_t)blk * BLOCKSIZ + block_off, SEEK_SET);
     fread(temp_buf, 1, BLOCKSIZ - block_off, fd);
     temp_buf += BLOCKSIZ - block_off;
     j = block;
     for (i = 0; i < (len - block_off) / BLOCKSIZ && (j + i) < nblocks; i++) {
-        blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, j + i);
-        fseek(fd, (long)blk * BLOCKSIZ, SEEK_SET);
+        blk = fs_translate(filsys.s_pgd, inode->di_addr, j + i);
+        fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
         fread(temp_buf, 1, BLOCKSIZ, fd);
         temp_buf += BLOCKSIZ;
     }
 
     block_off = (len - block_off) % BLOCKSIZ;
-    blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, (int)(off / BLOCKSIZ + (len - block_off) / BLOCKSIZ));
-    fseek(fd, (long)blk * BLOCKSIZ, SEEK_SET);
+    blk = fs_translate(filsys.s_pgd, inode->di_addr, (int32_t)(off / BLOCKSIZ + (len - block_off) / BLOCKSIZ));
+    fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
     fread(temp_buf, 1, block_off, fd);
     sys_ofile[user[user_id].u_ofile[cfd]].f_offset += len;
     return len;
@@ -53,10 +63,10 @@ uint32_t fs_read(unsigned short cfd, unsigned int user_id, char *buf, unsigned i
 #pragma endregion
 
 #pragma region write
-uint32_t fs_write(unsigned short cfd, unsigned int user_id, char *buf, unsigned int len) {
-    unsigned long off;
-    int block, block_off, i, j;
-    int nblocks;
+uint32_t fs_write(uint16_t cfd, uint32_t user_id, char *buf, uint32_t len) {
+    uint64_t off;
+    int32_t block, block_off, i, j;
+    int32_t nblocks;
     struct inode *inode;
     char *temp_buf;
     uint32_t blk;
@@ -68,45 +78,43 @@ uint32_t fs_write(unsigned short cfd, unsigned int user_id, char *buf, unsigned 
     }
     temp_buf = buf;
     off = sys_ofile[user[user_id].u_ofile[cfd]].f_offset;
-    block_off = (int)(off % BLOCKSIZ);
-    block = (int)(off / BLOCKSIZ);
+    block_off = (int32_t)(off % BLOCKSIZ);
+    block = (int32_t)(off / BLOCKSIZ);
 
-    if (block_off + len < BLOCKSIZ) {
-        blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, block);
-        fseek(fd, (long)blk * BLOCKSIZ + block_off, SEEK_SET);
+    if (block_off + (int32_t)len < BLOCKSIZ) {
+        blk = fs_translate(filsys.s_pgd, inode->di_addr, block);
+        fseek(fd, (int64_t)blk * BLOCKSIZ + block_off, SEEK_SET);
         fwrite(temp_buf, 1, len, fd);
         return len;
     }
 
-    blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, block);
-    fseek(fd, (long)blk * BLOCKSIZ + block_off, SEEK_SET);
+    blk = fs_translate(filsys.s_pgd, inode->di_addr, block);
+    fseek(fd, (int64_t)blk * BLOCKSIZ + block_off, SEEK_SET);
     fwrite(temp_buf, 1, BLOCKSIZ - block_off, fd);
     temp_buf += BLOCKSIZ - block_off;
-    nblocks = block + (int)((len - block_off) / BLOCKSIZ) + 1;
+    nblocks = block + (int32_t)((len - block_off) / BLOCKSIZ) + 1;
 
     for (i = 0; i < (len - block_off) / BLOCKSIZ; i++) {
-        blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, block + 1 + i);
+        blk = fs_translate(filsys.s_pgd, inode->di_addr, block + 1 + i);
         if (blk == 0) {
             blk = balloc();
-            /* TODO: 写入新分配的块号到页表 */
-            fseek(fd, (long)blk * BLOCKSIZ, SEEK_SET);
+            fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
         } else {
-            fseek(fd, (long)blk * BLOCKSIZ, SEEK_SET);
+            fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
         }
         fwrite(temp_buf, 1, BLOCKSIZ, fd);
         temp_buf += BLOCKSIZ;
     }
     block_off = (len - block_off) % BLOCKSIZ;
-    blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, (int)(off / BLOCKSIZ + (len - block_off) / BLOCKSIZ));
+    blk = fs_translate(filsys.s_pgd, inode->di_addr, (int32_t)(off / BLOCKSIZ + (len - block_off) / BLOCKSIZ));
     if (blk == 0) {
         blk = balloc();
-        fseek(fd, (long)blk * BLOCKSIZ, SEEK_SET);
+        fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
     } else {
-        fseek(fd, (long)blk * BLOCKSIZ, SEEK_SET);
+        fseek(fd, (int64_t)blk * BLOCKSIZ, SEEK_SET);
     }
     fwrite(temp_buf, 1, block_off, fd);
     sys_ofile[user[user_id].u_ofile[cfd]].f_offset += len;
     return len;
 }
 #pragma endregion
-

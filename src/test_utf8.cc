@@ -1,11 +1,13 @@
 // utf8 测试：输入中文 -> 存到 direct 结构 -> 读出来输出
+#pragma region include::standard
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <windows.h>
-#include <stdio.h>
-#include <string.h>
-
+#pragma endregion include::standard
 // 给定字符串和起始位置，读一个 UTF-8 字符，返回码点和字符字节数
-static void utf8_decode(const char *buf, int start, unsigned int *cp, int *blen) {
-    unsigned char c = (unsigned char)buf[start];
+static void utf8_decode(const char *buf, int start, uint32_t *cp, int *blen) {
+    uint8_t c = (uint8_t)buf[start];
     int len;
     if (c < 0x80) {
         len = 1;
@@ -37,7 +39,7 @@ static void utf8_decode(const char *buf, int start, unsigned int *cp, int *blen)
 // 模拟 direct 结构
 struct direct {
     char d_name[255];
-    unsigned int d_ino;
+    uint32_t d_ino;
 };
 
 int main() {
@@ -71,4 +73,3 @@ int main() {
 
     return 0;
 }
-

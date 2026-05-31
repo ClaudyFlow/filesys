@@ -1,14 +1,24 @@
-/* creat.c — 创建文件 */
-#include <stdio.h>
-#include <stdint.h>
-#include "filesys.h"
-#include <stdlib.h>
+/* creat.cc — 创建文件 */
 
+#pragma region include::header
+#include "creat.hh"
+#pragma endregion include::header
 
-void fs_creat(unsigned int user_id, char *filename, unsigned short mode) {
-    unsigned int di_ith, di_ino;
+#pragma region include::project
+#include "filesys.hh"
+#pragma endregion include::project
+
+#pragma region include::standard
+#include <cstdlib>
+#include <cstring>
+// exclude <cstdint>
+// exclude <cstdio>
+#pragma endregion include::standard
+
+void fs_creat(uint32_t user_id, char *filename, uint16_t mode) {
+    uint32_t di_ith, di_ino;
     struct inode *inode;
-    int i, j;
+    int32_t i, j;
     uint32_t blk;
 
     di_ino = namei(filename);
@@ -19,14 +29,12 @@ void fs_creat(unsigned int user_id, char *filename, unsigned short mode) {
             printf("\rcreat access not allowed \n");
             return;
         }
-        /* 释放旧文件所有块 */
-        int nblocks = (int)(inode->di_size / BLOCKSIZ) + 1;
+        int32_t nblocks = (int32_t)(inode->di_size / BLOCKSIZ) + 1;
         for (i = 0; i < nblocks; i++) {
-            blk = fs_translate(fd, filsys.s_pgd, inode->di_addr, i);
+            blk = fs_translate(filsys.s_pgd, inode->di_addr, i);
             if (blk != 0)
                 bfree(blk);
         }
-        /* 更新 sys_file 指针 */
         for (i = 0; i < SYSOPENFILE; i++)
             if (sys_ofile[i].f_inode == inode)
                 sys_ofile[i].f_offset = 0;
@@ -69,4 +77,3 @@ void fs_creat(unsigned int user_id, char *filename, unsigned short mode) {
         return;
     }
 }
-

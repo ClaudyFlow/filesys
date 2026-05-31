@@ -31,6 +31,12 @@ set(CC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/file/fsaddr.cc
 )
 
+# src/util/ .cc 文件
+set(UTIL_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/util/nano.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/util/utf8.cc
+)
+
 # 头文件目录
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -40,7 +46,7 @@ include_directories(
 )
 
 # 主程序
-add_executable(main.exe ${C_FILES} ${CC_FILES})
+add_executable(main ${C_FILES} ${CC_FILES} ${UTIL_FILES})
 
 # mkfs 工具
-add_executable(mkfs.exe ${CMAKE_CURRENT_SOURCE_DIR}/src/file/mkfs.cc)
+add_executable(mkfs ${CMAKE_CURRENT_SOURCE_DIR}/src/file/mkfs.cc)

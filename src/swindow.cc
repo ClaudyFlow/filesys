@@ -1,4 +1,7 @@
-#include<windows.h>
+#pragma region include::standard
+#include <windows.h>
+#pragma endregion include::standard
+
 LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 int WINAPI WinMain(HINSTANCE hinstance,
                    HINSTANCE hPrevInst,
@@ -56,4 +59,3 @@ LRESULT CALLBACK WndProc(HWND   hwnd,
     }
     return(0);
 }
-

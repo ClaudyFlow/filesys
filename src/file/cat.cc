@@ -3,13 +3,15 @@
 #pragma endregion include::header
 
 #pragma region include::project
-#include "file/file.hh"
 #include "file/dir.hh"
+#include "file/file.hh"
 #include "util/utf8.hh"
 #pragma endregion include::project
 
 #pragma region include::standard
 #include <cstdio>
+// exclude <cstdint>
+// exclude <windows.h>
 #pragma endregion include::standard
 
 //==============================================================================
@@ -39,4 +41,3 @@ bool cat_files(HANDLE fd_out, const char **paths) {
     }
     return true;
 }
-

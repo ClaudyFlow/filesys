@@ -1,9 +1,14 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#pragma region include::project
+#include "filesys.hh"
+#pragma endregion include::project
+#pragma region include::standard
 #include <conio.h>
+#include <cstdlib>
+#include <cstring>
 #include <windows.h>
-#include "filesys.h"
+// #include <cstdint>
+// #include <cstdio>
+#pragma endregion include::standard
 
 #define FS_VERSION "1.0.0"
 #define FS_BUILD_DATE __DATE__
@@ -44,7 +49,7 @@ void show_help_document(void) {
     printf("  Build   : %s\n", FS_BUILD_DATE);
     printf("  Arch    : x86-64 Page Table (4-level)\n");
     printf("  Block   : %d bytes\n", BLOCKSIZ);
-    printf("  Disk    : %lu blocks\n\n", (unsigned long)filsys.s_fsize);
+    printf("  Disk    : %I64u blocks\n\n", (uint64_t)filsys.s_fsize);
 
     printf("  [Test Users]\n");
     printf("  ----------------------------------------\n");
@@ -211,7 +216,7 @@ void cmd_format(void) {
     }
 }
 
-void cmd_login(unsigned short uid, char *passwd) {
+void cmd_login(uint16_t uid, char *passwd) {
     if (logged_in_user_idx >= 0 && user[logged_in_user_idx].u_uid != 0) {
         printf("\n  [INFO] User %u already logged in. Logout first.\n\n",
                user[logged_in_user_idx].u_uid);
@@ -234,7 +239,7 @@ void cmd_logout(void) {
         printf("\n  [INFO] No user logged in.\n\n");
         return;
     }
-    unsigned short uid = user[logged_in_user_idx].u_uid;
+    uint16_t uid = user[logged_in_user_idx].u_uid;
     fs_logout(uid);
     user[logged_in_user_idx].u_uid = 0;
     user[logged_in_user_idx].u_gid = 0;
@@ -268,7 +273,7 @@ void cmd_chdir(char *dirname) {
     fs_chdir(dirname);
 }
 
-void cmd_create(char *filename, unsigned short mode) {
+void cmd_create(char *filename, uint16_t mode) {
     if (logged_in_user_idx < 0) {
         printf("\n  [ERROR] Please login first.\n\n");
         return;
@@ -282,7 +287,7 @@ void cmd_create(char *filename, unsigned short mode) {
     printf("\n  [OK] File '%s' created with mode %04o.\n\n", filename, mode);
 }
 
-void cmd_open(char *filename, unsigned short openmode) {
+void cmd_open(char *filename, uint16_t openmode) {
     if (logged_in_user_idx < 0) {
         printf("\n  [ERROR] Please login first.\n\n");
         return;
@@ -291,19 +296,19 @@ void cmd_open(char *filename, unsigned short openmode) {
         printf("\n  [ERROR] File name required.\n\n");
         return;
     }
-    unsigned short cfd = aopen(logged_in_user_idx, filename, openmode);
+    uint16_t cfd = aopen(logged_in_user_idx, filename, openmode);
     if (cfd != 0) {
         printf("\n  [OK] File '%s' opened, fd=%u\n\n", filename, cfd);
     }
 }
 
-void cmd_read(unsigned short cfd) {
+void cmd_read(uint16_t cfd) {
     if (logged_in_user_idx < 0) {
         printf("\n  [ERROR] Please login first.\n\n");
         return;
     }
     char buf[BLOCKSIZ + 1];
-    unsigned int len = fs_read(cfd, logged_in_user_idx, buf, BLOCKSIZ);
+    uint32_t len = fs_read(cfd, logged_in_user_idx, buf, BLOCKSIZ);
     if (len > 0) {
         buf[len] = '\0';
         printf("\n  --- Content (%u bytes) ---\n", len);
@@ -314,17 +319,17 @@ void cmd_read(unsigned short cfd) {
     }
 }
 
-void cmd_write(unsigned short cfd, char *text) {
+void cmd_write(uint16_t cfd, char *text) {
     if (logged_in_user_idx < 0) {
         printf("\n  [ERROR] Please login first.\n\n");
         return;
     }
-    unsigned int len = strlen(text);
-    unsigned int written = fs_write(cfd, logged_in_user_idx, text, len);
+    uint32_t len = strlen(text);
+    uint32_t written = fs_write(cfd, logged_in_user_idx, text, len);
     printf("\n  [OK] Wrote %u bytes.\n\n", written);
 }
 
-void cmd_close(unsigned short cfd) {
+void cmd_close(uint16_t cfd) {
     if (logged_in_user_idx < 0) {
         printf("\n  [ERROR] Please login first.\n\n");
         return;
@@ -373,83 +378,66 @@ void main_loop(void) {
 
         if (strcmp(cmd, "help") == 0) {
             cmd_help();
-        }
-        else if (strcmp(cmd, "H") == 0) {
+        } else if (strcmp(cmd, "H") == 0) {
             show_help_document();
-        }
-        else if (strcmp(cmd, "user") == 0) {
+        } else if (strcmp(cmd, "user") == 0) {
             cmd_user();
-        }
-        else if (strcmp(cmd, "pwd") == 0) {
+        } else if (strcmp(cmd, "pwd") == 0) {
             cmd_pwd();
-        }
-        else if (strcmp(cmd, "format") == 0) {
+        } else if (strcmp(cmd, "format") == 0) {
             cmd_format();
-        }
-        else if (strcmp(cmd, "login") == 0) {
+        } else if (strcmp(cmd, "login") == 0) {
             if (argc < 3) {
                 printf("\n  [ERROR] Usage: login <uid> <password>\n\n");
             } else {
-                unsigned short uid = (unsigned short)atoi(arg1);
+                uint16_t uid = (uint16_t)atoi(arg1);
                 cmd_login(uid, arg2);
             }
-        }
-        else if (strcmp(cmd, "logout") == 0) {
+        } else if (strcmp(cmd, "logout") == 0) {
             cmd_logout();
-        }
-        else if (strcmp(cmd, "dir") == 0) {
+        } else if (strcmp(cmd, "dir") == 0) {
             if (logged_in_user_idx < 0) {
                 printf("\n  [ERROR] Please login first.\n\n");
             } else {
                 _dir();
             }
-        }
-        else if (strcmp(cmd, "mkdir") == 0) {
+        } else if (strcmp(cmd, "mkdir") == 0) {
             cmd_mkdir(arg1);
-        }
-        else if (strcmp(cmd, "chdir") == 0) {
+        } else if (strcmp(cmd, "chdir") == 0) {
             cmd_chdir(arg1);
-        }
-        else if (strcmp(cmd, "create") == 0) {
-            unsigned short mode = (argc >= 3) ? (unsigned short)strtol(arg2, NULL, 8) : DEFAULTMODE;
+        } else if (strcmp(cmd, "create") == 0) {
+            uint16_t mode = (argc >= 3) ? (uint16_t)strtol(arg2, NULL, 8) : DEFAULTMODE;
             cmd_create(arg1, mode);
-        }
-        else if (strcmp(cmd, "open") == 0) {
-            unsigned short openmode = (argc >= 3) ? (unsigned short)atoi(arg2) : READ;
+        } else if (strcmp(cmd, "open") == 0) {
+            uint16_t openmode = (argc >= 3) ? (uint16_t)atoi(arg2) : READ;
             cmd_open(arg1, openmode);
-        }
-        else if (strcmp(cmd, "read") == 0) {
+        } else if (strcmp(cmd, "read") == 0) {
             if (argc < 2) {
                 printf("\n  [ERROR] Usage: read <fd>\n\n");
             } else {
-                cmd_read((unsigned short)atoi(arg1));
+                cmd_read((uint16_t)atoi(arg1));
             }
-        }
-        else if (strcmp(cmd, "write") == 0) {
+        } else if (strcmp(cmd, "write") == 0) {
             if (argc < 3) {
                 printf("\n  [ERROR] Usage: write <fd> <text>\n\n");
             } else {
-                cmd_write((unsigned short)atoi(arg1), arg2);
+                cmd_write((uint16_t)atoi(arg1), arg2);
             }
-        }
-        else if (strcmp(cmd, "close") == 0) {
+        } else if (strcmp(cmd, "close") == 0) {
             if (argc < 2) {
                 printf("\n  [ERROR] Usage: close <fd>\n\n");
             } else {
-                cmd_close((unsigned short)atoi(arg1));
+                cmd_close((uint16_t)atoi(arg1));
             }
-        }
-        else if (strcmp(cmd, "delete") == 0) {
+        } else if (strcmp(cmd, "delete") == 0) {
             cmd_delete(arg1);
-        }
-        else if (strcmp(cmd, "exit") == 0) {
+        } else if (strcmp(cmd, "exit") == 0) {
             if (logged_in_user_idx >= 0) {
                 cmd_logout();
             }
             printf("\n  Good Bye! See You Next Time.\n\n");
             break;
-        }
-        else {
+        } else {
             printf("\n  [ERROR] Unknown command: '%s'. Type 'help' for available commands.\n\n", cmd);
         }
     }
@@ -461,19 +449,26 @@ int main(void) {
     char choice;
 
     print_banner();
-    printf("  Do you want to [f]ormat the disk or [l]oad existing? (f/l): ");
-    choice = getch();
-    printf("%c\n", choice);
 
-    if (choice == 'f' || choice == 'F') {
-        printf("\n  [WARNING] Format will erase ALL data!\n");
-        printf("  Are you sure? (y/N): ");
+    if (fopen("filesystem", "rb") == NULL) {
+        printf("  [INFO] No filesystem found, creating new one...\n");
+        fs_format();
+        printf("  [OK] Filesystem created.\n\n");
+    } else {
+        printf("  Do you want to [f]ormat the disk or [l]oad existing? (f/l): ");
         choice = getch();
         printf("%c\n", choice);
-        if (choice == 'y' || choice == 'Y') {
-            fs_format();
-        } else {
-            printf("\n  [CANCELLED] Format aborted.\n");
+
+        if (choice == 'f' || choice == 'F') {
+            printf("\n  [WARNING] Format will erase ALL data!\n");
+            printf("  Are you sure? (y/N): ");
+            choice = getch();
+            printf("%c\n", choice);
+            if (choice == 'y' || choice == 'Y') {
+                fs_format();
+            } else {
+                printf("\n  [CANCELLED] Format aborted.\n");
+            }
         }
     }
 

@@ -1,15 +1,15 @@
-
 #pragma region include::header
-#include <windows.h>
+#include "file/file.hh"
 #pragma endregion include::header
 
 #pragma region include::project
-#include "utf8.hh"
+#include "util/utf8.hh"
 #pragma endregion include::project
 
-
 #pragma region include::standard
-#include <stdlib.h>
+#include <cstdlib>
+// exclude <cstdint>
+// exclude <windows.h>
 #pragma endregion include::standard
 
 //==============================================================================
@@ -109,4 +109,3 @@ bool file_lseek(HANDLE fd, LARGE_INTEGER offset, DWORD whence,
 bool file_fsync(HANDLE fd) {
     return FlushFileBuffers(fd) != 0;
 }
-

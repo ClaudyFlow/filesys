@@ -1,5 +1,10 @@
-#include <stdio.h>
-#include <stdint.h>
+#ifndef INC_FILESYS
+#define INC_FILESYS
+
+#pragma region include::standard
+#include <cstdint>
+#include <cstdio>
+#pragma endregion include::standard
 
 #define BLOCKSIZ    512 ///<块大小
 #define SYSOPENFILE 40///<系统打开文件上限？
@@ -130,28 +135,31 @@ extern struct pwd pwd[PWDNUM];
 extern struct user user[USERNUM];
 extern        FILE *fd;
 extern struct inode *cur_path_inode;
-extern int    user_id;
-extern struct inode *iget(unsigned int dinodeid);
+extern int32_t user_id;
+extern struct inode *iget(uint32_t dinodeid);
 extern void iput(struct inode *pinode);
 extern uint32_t balloc(void);
-extern int bfree(unsigned int block_num);
+extern uint32_t bfree(uint32_t block_num);
 extern struct inode *ialloc(void);
-extern void ifree(unsigned dinodeid);
+extern void ifree(uint32_t dinodeid);
 extern uint32_t namei(char *name);
 extern uint16_t iname(char *name);
-extern uint32_t file_access(unsigned int user_id, struct inode *inode, uint16_t mode);
+extern uint32_t file_access(uint32_t user_id, struct inode *inode, uint16_t mode);
 extern void _dir(void);
 extern void fs_mkdir(char *dirname);
 extern void fs_chdir(char *dirname);
-extern uint16_t aopen(unsigned short uid, char *filename, unsigned short mode);
-extern void fs_creat(unsigned int user_id, char *filename, unsigned short mode);
-extern uint32_t fs_read(unsigned short cfd, unsigned int user_id, char *buf, unsigned int len);
-extern uint32_t fs_write(unsigned short cfd, unsigned int user_id, char *buf, unsigned int len);
-extern void fs_login(unsigned short uid, char *passwd);
-extern void fs_logout(unsigned short uid);
+extern uint16_t aopen(uint16_t uid, char *filename, uint16_t openmode);
+extern void fs_creat(uint32_t user_id, char *filename, uint16_t mode);
+extern uint32_t fs_read(uint16_t cfd, uint32_t user_id, char *buf, uint32_t len);
+extern uint32_t fs_write(uint16_t cfd, uint32_t user_id, char *buf, uint32_t len);
+extern void fs_login(uint16_t uid, char *passwd);
+extern void fs_logout(uint16_t uid);
 extern void fs_install(void);
 extern void fs_format(void);
-extern void fs_close(unsigned int user_id, unsigned short cfd);
+extern void fs_close(uint32_t user_id, uint16_t cfd);
 extern void fs_halt(void);
-extern uint32_t fs_translate(FILE *fp, uint32_t pgd_blk, uint64_t di_addr, uint64_t blk_num);
+extern uint32_t fs_translate(uint32_t pgd_blk, uint64_t di_addr, uint64_t blk_num);
 extern void fs_delete(char *filename);
+
+
+#endif /* INC_FILESYS */

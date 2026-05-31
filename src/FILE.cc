@@ -1,5 +1,8 @@
-#include "stdio.h"
-#include "string.h"
+#pragma region include::standard
+#include "cstdio"
+#include "cstring"
+#pragma endregion include::standard
+
 main() {
     FILE * fp;
     char str[100],ch,c[200];

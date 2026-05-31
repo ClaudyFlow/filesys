@@ -3,7 +3,6 @@
 
 #pragma region include::standard
 #include <cstdint>
-#include <cstdio>
 #pragma endregion include::standard
 
 //==============================================================================
@@ -59,13 +58,12 @@ constexpr uint64_t MAKE_LA(uint64_t pml4, uint64_t pdpt, uint64_t pd, uint64_t p
 
 //==============================================================================
 // 将 inode di_addr 翻译成物理块号
-// @param fp        虚拟磁盘镜像 FILE*
 // @param pgd_blk   PGD 基址块号（来自超级块 s_pgd）
 // @param di_addr   inode 的逻辑地址（x86-64 纯逻辑地址）
 // @param blk_num   要读取的逻辑块号（从0开始）
 // @return 物理块号，失败返回0
 //==============================================================================
-uint32_t fs_translate(FILE *fp, uint32_t pgd_blk,
-                      uint64_t di_addr, uint64_t blk_num);
+uint32_t fs_translate(uint32_t pgd_blk, uint64_t di_addr, uint64_t blk_num);
 
-#endif // INC_FILE_FSADDR
+
+#endif /* INC_FILE_FSADDR */

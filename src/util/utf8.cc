@@ -1,21 +1,41 @@
-// utf8 测试：输入中文 -> 存到 direct 结构 -> 读出来输出
+// utf8 编码/解码实现
 #pragma region include::header
 #include "util/utf8.hh"
 #pragma endregion include::header
 
 #pragma region include::project
-
 #pragma endregion include::project
 
 #pragma region include::standard
-#include <windows.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
+// exclude <cstdint>
 #pragma endregion include::standard
 
-// 给定字符串和起始位置，读一个 UTF-8 字符，返回码点和字符字节数
-static bool utf8_decode(const char *buf, int start, unsigned int *cp, int *blen) {
-    unsigned char c = (unsigned char)buf[start];
+bool utf8_encode(char *buf, uint32_t cp, int *out_len) {
+    if (cp < 0x80) {
+        buf[0] = (char)cp;
+        *out_len = 1;
+    } else if (cp < 0x800) {
+        buf[0] = (char)(0xC0 | ((cp >> 6) & 0x1F));
+        buf[1] = (char)(0x80 | (cp & 0x3F));
+        *out_len = 2;
+    } else if (cp < 0x10000) {
+        buf[0] = (char)(0xE0 | ((cp >> 12) & 0x0F));
+        buf[1] = (char)(0x80 | ((cp >> 6) & 0x3F));
+        buf[2] = (char)(0x80 | (cp & 0x3F));
+        *out_len = 3;
+    } else {
+        buf[0] = (char)(0xF0 | ((cp >> 18) & 0x07));
+        buf[1] = (char)(0x80 | ((cp >> 12) & 0x3F));
+        buf[2] = (char)(0x80 | ((cp >> 6) & 0x3F));
+        buf[3] = (char)(0x80 | (cp & 0x3F));
+        *out_len = 4;
+    }
+    return true;
+}
+
+bool utf8_decode(const char *buf, int start, uint32_t *cp, int *blen) {
+    uint8_t c = (uint8_t)buf[start];
     int len;
     if (c < 0x80) {
         len = 1;
@@ -42,43 +62,5 @@ static bool utf8_decode(const char *buf, int start, unsigned int *cp, int *blen)
         *cp |= (buf[start + 2] & 0x3F) << 6;
         *cp |= (buf[start + 3] & 0x3F);
     }
+    return true;
 }
-
-// 模拟 direct 结构
-struct direct {
-    char d_name[255];
-    unsigned int d_ino;
-};
-
-int main() {
-    direct entry = {0};
-
-    SetConsoleOutputCP(65001);
-    SetConsoleCP(65001);
-
-    strcpy((char*)entry.d_name, "新建文件1");
-    entry.d_ino = 1;
-
-    printf("hex + unicode:\n");
-    int pos = 0;
-    while (entry.d_name[pos]) {
-        int start = pos;
-        unsigned int cp;
-        int blen;
-        utf8_decode(entry.d_name, start, &cp, &blen);
-        // 输出字节
-        printf("  bytes: ");
-        for (int i = 0; i < blen; i++) {
-            printf("%02X ", (unsigned char)entry.d_name[start + i]);
-        }
-        printf("  U+%04X\n", cp);
-        pos += blen;
-    }
-    printf("\n");
-
-    // 原始字节
-    printf("raw bytes: %s\n", entry.d_name);
-
-    return 0;
-}
-
